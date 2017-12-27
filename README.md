@@ -12,7 +12,7 @@ Plug 'prabirshrestha/asyncomplete-file.vim'
 ## Register asyncomplete-file.vim
 
 ```vim
-call asyncomplete#register_source(asyncomplete#sources#file#get_source_options({
+au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#sources#file#get_source_options({
     \ 'name': 'file',
     \ 'whitelist': ['*'],
     \ 'priority': 10,
