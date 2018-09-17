@@ -16,17 +16,22 @@ function! asyncomplete#sources#file#completor(opt, ctx)
   let l:typed = a:ctx['typed']
   let l:col   = a:ctx['col']
 
-  let l:kw    = matchstr(l:typed, '<\@<!\.\{0,2}/.*$')
+  let l:kw    = matchstr(l:typed, '<\@<!\(\.\{0,2}\|\~\|\$\i\+\|[^''"[\]:;|=,]\{-}\|\a:\)/[^''"[\]:;|=,]\{-}$')
   let l:kwlen = len(l:kw)
 
   if l:kwlen < 1
     return
   endif
 
-  if l:kw !~ '^/'
-    let l:cwd = expand('#' . l:bufnr . ':p:h') . '/' . l:kw
+  if l:kw =~ '^/' || l:kw =~ '^\a:'
+    let l:cwd = l:kw 
+    let l:test=0
+  elseif l:kw =~ '^\$\a' ||  l:kw =~ '^\~'
+    let l:cwd = expand(l:kw)
+    let l:test=1
   else
-    let l:cwd = l:kw
+    let l:cwd = expand('#' . l:bufnr . ':p:h') . '/' . l:kw
+    let l:test=2
   endif
 
   let l:glob = fnamemodify(l:cwd, ':t') . '*'
@@ -40,6 +45,7 @@ function! asyncomplete#sources#file#completor(opt, ctx)
   let l:cwdlen   = strlen(l:cwd)
   let l:startcol = l:col - l:kwlen
   let l:files    = split(globpath(l:cwd, l:glob), '\n')
+  echo l:files
   let l:matches  = map(l:files, {key, val -> s:filename_map(l:pre, val)})
 
   call asyncomplete#complete(a:opt['name'], a:ctx, l:startcol, l:matches)
