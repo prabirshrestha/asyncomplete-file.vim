@@ -47,6 +47,6 @@ endfunction
 
 function! asyncomplete#sources#file#get_source_options(opts)
   return extend(extend({}, a:opts), {
-        \ 'refresh_pattern': '/$',
+        \ 'triggers': {'*': ['/']},
         \ })
 endfunction
