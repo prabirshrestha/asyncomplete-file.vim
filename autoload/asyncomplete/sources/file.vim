@@ -2,8 +2,16 @@ function! s:filename_map(prefix, file) abort
   let l:abbr = fnamemodify(a:file, ':t')
   let l:word = a:prefix . l:abbr
 
+  if isdirectory(a:file)
+    let l:menu = '[dir]'
+    let l:abbr = '/' . l:abbr
+  else
+    let l:menu = '[file]'
+    let l:abbr = l:abbr
+  endif
+
   return {
-        \ 'menu': '[path]',
+        \ 'menu': l:menu,
         \ 'word': l:word,
         \ 'abbr': l:abbr,
         \ 'icase': 1,
@@ -41,6 +49,7 @@ function! asyncomplete#sources#file#completor(opt, ctx)
   let l:startcol = l:col - l:kwlen
   let l:files    = split(globpath(l:cwd, l:glob), '\n')
   let l:matches  = map(l:files, {key, val -> s:filename_map(l:pre, val)})
+  let l:matches  = sort(l:matches, function('s:sort'))
 
   call asyncomplete#complete(a:opt['name'], a:ctx, l:startcol, l:matches)
 endfunction
@@ -50,3 +59,14 @@ function! asyncomplete#sources#file#get_source_options(opts)
         \ 'triggers': {'*': ['/']},
         \ })
 endfunction
+
+function! s:sort(item1, item2) abort
+  if a:item1.menu ==# '[dir]' && a:item2.menu !=# '[dir]'
+    return -1
+  endif
+  if a:item1.menu !=# '[dir]' && a:item2.menu ==# '[dir]'
+    return 1
+  endif
+  return 0
+endfunction
+
