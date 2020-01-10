@@ -24,14 +24,14 @@ function! asyncomplete#sources#file#completor(opt, ctx)
   let l:typed = a:ctx['typed']
   let l:col   = a:ctx['col']
 
-  let l:kw    = matchstr(l:typed, '<\@<!\.\{0,2}/.*$')
+  let l:kw    = matchstr(l:typed, '<\@<!\(\.\{0,2}/\|\~\).*$')
   let l:kwlen = len(l:kw)
 
   if l:kwlen < 1
     return
   endif
 
-  if l:kw !~ '^/'
+  if l:kw !~ '^\(/\|\~\)'
     let l:cwd = expand('#' . l:bufnr . ':p:h') . '/' . l:kw
   else
     let l:cwd = l:kw
