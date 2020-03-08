@@ -37,7 +37,7 @@ function! asyncomplete#sources#file#completor(opt, ctx)
     let l:cwd = l:kw
   endif
 
-  let l:glob = fnamemodify(l:cwd, ':t') . '*'
+  let l:glob = fnamemodify(l:cwd, ':t') . '.\=[^.]*'
   let l:cwd  = fnamemodify(l:cwd, ':p:h')
   let l:pre  = fnamemodify(l:kw, ':h')
 
